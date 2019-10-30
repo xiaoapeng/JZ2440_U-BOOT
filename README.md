@@ -1,0 +1,2 @@
+# JZ2440_U-BOOT
+将uboot移植到JZ2440上
