@@ -1,0 +1,15 @@
+bzlib_huffman.o: bzlib_huffman.c \
+  /home/plz/git/JZ2440_U-BOOT/include/config.h \
+  /home/plz/git/JZ2440_U-BOOT/include/config_cmd_defaults.h \
+  /home/plz/git/JZ2440_U-BOOT/include/config_defaults.h \
+  /home/plz/git/JZ2440_U-BOOT/include/configs/smdk2440.h \
+  /home/plz/git/JZ2440_U-BOOT/include/config_cmd_default.h \
+  /home/plz/git/JZ2440_U-BOOT/include/asm/config.h bzlib_private.h \
+  /home/plz/git/JZ2440_U-BOOT/include/malloc.h \
+  /home/plz/git/JZ2440_U-BOOT/include/linux/stddef.h \
+  /home/plz/git/JZ2440_U-BOOT/include/linux/types.h \
+  /home/plz/git/JZ2440_U-BOOT/include/linux/config.h \
+  /home/plz/git/JZ2440_U-BOOT/include/linux/posix_types.h \
+  /home/plz/git/JZ2440_U-BOOT/include/asm/posix_types.h \
+  /home/plz/git/JZ2440_U-BOOT/include/asm/types.h \
+  /home/plz/git/JZ2440_U-BOOT/include/bzlib.h
