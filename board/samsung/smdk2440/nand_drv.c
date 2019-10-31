@@ -117,29 +117,68 @@ static void nand_read(unsigned int addr, unsigned char *buf, unsigned int len)
 	
 	nand_deselect(); 	
 }
-static int __nand_boot(void)
+int  __nand_boot(void)
 {
 	//判断为nand启动返回1
-	int *p=(int*)0x10;
+	volatile int *p=(int*)0x0;
 	int b;
 	b=*p;
-	(*p)++;
-	if(*p==b)
-		return 0;
-	else
+	*p=b+1;
+	if(b+1==*p)
 	{
 		*p=b;
 		return 1;
 	}
+	return 0;
 }
+#define SET_GPIO_VAL(GpioReg,val) 		((dgpio((GpioReg))|=(val)))
+#define RESER_GPIO_VAL(GpioReg,mask) 	((dgpio((GpioReg))&=(~(mask))))
+
+typedef unsigned int gpiocon_t;
+int gpio_set(unsigned int gpio_addr,unsigned int mask,unsigned int val)
+{
+	unsigned int gpiocon = dgpio(gpio_addr);
+	//如果超出要操作的范围 说明该调用不合法
+	if((~mask)&val)
+		return -1;
+	//先清除要操作的位 在对该位赋值 
+	RESER_GPIO_VAL(&gpiocon, mask);
+	SET_GPIO_VAL(&gpiocon, val);
+	dgpio(gpio_addr)=gpiocon;
+	return 0;
+}
+#define     GPFCON                   __REG(0x56000050)  //Port F control                                   
+#define     GPFDAT                   __REG(0x56000054)  //Port F data                                      
+#define led1(val) gpio_set(GPFDAT,(1<<4),(val<<4))
+#define led2(val) gpio_set(GPFDAT,(1<<5),(val<<5))
+#define led3(val) gpio_set(GPFDAT,(1<<6),(val<<6))
+
+void led_config(void)
+{
+	gpio_set(GPFCON,(3<<8)|(3<<10)|(3<<12),(1<<8)|(1<<10)|(1<<12));
+	gpio_set(GPFDAT,(1<<4)|(1<<5)|(1<<6),(1<<4)|(1<<5)|(1<<6));
+}
+
+void led1on(void)
+{
+	led1(0);
+}
+
+void led1off(void)
+{
+	led1(1);
+}
+
 extern unsigned long __bss_start, __bss_end__;
 void relocation(void)
 {
-	unsigned long* lma_start_p=(unsigned int* )0;
+	unsigned long* lma_start_p=(unsigned long* )0;
 	unsigned long* code_start_p=(unsigned long*)CONFIG_SYS_TEXT_BASE;
 	unsigned long* bss_start_p=&__bss_start;
 	unsigned long* end_p=&__bss_end__;
-	//初始化sdram
+	led_config();
+	led1(__nand_boot());
+	//while(1);
 	nand_init();
 	if(__nand_boot())
 	{

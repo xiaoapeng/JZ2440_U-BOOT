@@ -366,6 +366,23 @@ static const struct amd_flash_info jedec_table[] = {
 			ERASEINFO(0x10000, 7),
 		}
 	},
+	{
+		.mfr_id		= (u16)MX_MANUFACT,		/*厂家ID*/
+		.dev_id		= 0x2249,				/*设备ID*/
+		.name		= "MXIC MX29LV040",		/**/
+		.uaddr		= {
+			[1] = MTD_UADDR_0x0555_0x02AA 	/*解锁地址 操作地址*/
+		},
+		.DevSize	= SIZE_2MiB,			/*大小*/
+		.CmdSet		= P_ID_AMD_STD,			/**/
+		.NumEraseRegions= 4,
+		.regions	= {
+			ERASEINFO(16*1024,  1),
+			ERASEINFO(8*1024,   2),			
+			ERASEINFO(32*1024, 	1),
+			ERASEINFO(64*1024, 31),
+		}
+	},
 #endif
 };
 

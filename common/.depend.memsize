@@ -1,6 +1,0 @@
-memsize.o: memsize.c /home/plz/git/JZ2440_U-BOOT/include/config.h \
-  /home/plz/git/JZ2440_U-BOOT/include/config_cmd_defaults.h \
-  /home/plz/git/JZ2440_U-BOOT/include/config_defaults.h \
-  /home/plz/git/JZ2440_U-BOOT/include/configs/smdk2440.h \
-  /home/plz/git/JZ2440_U-BOOT/include/config_cmd_default.h \
-  /home/plz/git/JZ2440_U-BOOT/include/asm/config.h

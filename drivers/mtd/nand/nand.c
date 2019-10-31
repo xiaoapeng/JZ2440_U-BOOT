@@ -78,7 +78,7 @@ int nand_register(int devnum)
 static void nand_init_chip(int i)
 {
 	struct mtd_info *mtd = &nand_info[i];
-	struct nand_chip *nand = &nand_chip[i];
+	struct nand_chip *nand = &nand_chip[i]; //函数操作接口
 	ulong base_addr = base_address[i];
 	int maxchips = CONFIG_SYS_NAND_MAX_CHIPS;
 
@@ -97,7 +97,7 @@ static void nand_init_chip(int i)
 	nand_register(i);
 }
 #endif
-
+//初始化NAND flash 
 void nand_init(void)
 {
 #ifdef CONFIG_SYS_NAND_SELF_INIT

@@ -1,7 +1,0 @@
-nand_drv.o: nand_drv.c \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/config.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/config_cmd_defaults.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/config_defaults.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/configs/smdk2440.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/config_cmd_default.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/asm/config.h

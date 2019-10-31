@@ -1,7 +1,0 @@
-div64.o: div64.c \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/linux/types.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/linux/config.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/linux/posix_types.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/linux/stddef.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/asm/posix_types.h \
-  /home/plz/shared/2440_u-boot/u-boot-2012.04.01/include/asm/types.h

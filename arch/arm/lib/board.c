@@ -442,8 +442,8 @@ void board_init_f(ulong bootflag)
 	//重定位代码 c语言调用汇编
 	//panic("目的地址：addr=0x%08x",addr);
 	//panic("neddddddddddd\n");
-	//relocate_code(addr_sp, id, addr);
-	board_init_r(id,addr);
+	relocate_code(addr_sp, id, addr);
+	//board_init_r(id,addr);
 	/* NOTREACHED - relocate_code() does not return */
 }
 
@@ -532,14 +532,13 @@ void board_init_r(gd_t *id, ulong dest_addr)
 		print_size(flash_size, "\n");
 #endif /* CONFIG_SYS_FLASH_CHECKSUM */
 	} else {
-		//puts(failed);
-		//hang();
 		puts("0KB\r\n");
 	}
 #endif
 
 #if defined(CONFIG_CMD_NAND)
 	puts("NAND:  ");
+	//初始化NAND flash
 	nand_init();		/* go init the NAND */
 #endif
 

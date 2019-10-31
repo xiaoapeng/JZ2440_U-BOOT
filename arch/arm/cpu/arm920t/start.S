@@ -195,7 +195,6 @@ copyex:
 	mov	r1, #3
 	str	r1, [r0]
 #endif
-
 	
 #endif	/* CONFIG_S3C24X0 */
 
@@ -211,6 +210,7 @@ copyex:
 /*初始化NAND flash 和重定向*/
 ldr sp, =(CONFIG_SYS_INIT_SP_ADDR)	//0x30000F80
 bic sp, sp, #7 /* 8-byte alignment for ABI compliance */
+
 //重定位代码
 bl relocation 
 ldr pc,bcall	
@@ -236,12 +236,22 @@ call_board_init_f:
  * after relocating the monitor code.
  *
  */
-
+//原代码重定向
 	.globl	relocate_code
 relocate_code:
 	mov	r4, r0	/* save addr_sp */
 	mov	r5, r1	/* save addr of gd */
 	mov	r6, r2	/* save addr of destination */
+#ifdef CONFIG_S3C2440
+	mov	sp, r4
+	mov r0, r5
+	mov r1, r6
+	bl board_init_r
+halt_:
+	b halt_
+	
+#endif
+
 
 	/* Set up the stack						    */
 stack_setup:
@@ -380,6 +390,7 @@ cpu_init_crit:
 
 	//保存lr值进行函数调用
 	mov	ip, lr
+	
 	//
 	bl	lowlevel_init
 

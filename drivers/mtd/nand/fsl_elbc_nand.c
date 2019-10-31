@@ -819,13 +819,18 @@ static int fsl_elbc_chip_init(int devnum, u8 *addr)
 #define CONFIG_SYS_NAND_BASE_LIST { CONFIG_SYS_NAND_BASE }
 #endif
 
+
+//NAND 配置寄存器
 static unsigned long base_address[CONFIG_SYS_MAX_NAND_DEVICE] =
-	CONFIG_SYS_NAND_BASE_LIST;
+	CONFIG_SYS_NAND_BASE_LIST; 
+//0x4E000000
+	
+	
 
 void board_nand_init(void)
 {
 	int i;
-
+	
 	for (i = 0; i < CONFIG_SYS_MAX_NAND_DEVICE; i++)
 		fsl_elbc_chip_init(i, (u8 *)base_address[i]);
 }
