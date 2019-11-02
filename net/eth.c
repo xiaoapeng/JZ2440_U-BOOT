@@ -92,7 +92,7 @@ static struct {
 static unsigned int eth_rcv_current = 0, eth_rcv_last = 0;
 #endif
 
-static struct eth_device *eth_devices, *eth_current;
+volatile struct eth_device *eth_devices, *eth_current;
 
 struct eth_device *eth_get_dev(void)
 {
@@ -158,10 +158,6 @@ static void eth_current_changed(void)
 		if (act == NULL || strcmp(act, eth_current->name) != 0)
 			setenv("ethact", eth_current->name);
 	}
-	/*
-	 * remove the variable completely if there is no active
-	 * interface
-	 */
 	else if (act != NULL)
 		setenv("ethact", NULL);
 }
@@ -201,18 +197,21 @@ int eth_register(struct eth_device *dev)
 {
 	struct eth_device *d;
 	static int index = 0;
-
+	
 	assert(strlen(dev->name) < sizeof(dev->name));
-
 	if (!eth_devices) {
+		//puts("5.13\n");
 		eth_current = eth_devices = dev;
 		eth_current_changed();
 	} else {
-		for (d=eth_devices; d->next!=eth_devices; d=d->next)
-			;
-		d->next = dev;
+		d=eth_devices;
+		d->next!=eth_devices;
+		//printf("&eth_devices=0x08x &d->next=0x08x ",(int)(&eth_devices),(int)(&(d->next)));
+		for (d=eth_devices; d->next!=eth_devices; d=d->next);
+		{
+			d->next = dev;
+		}
 	}
-
 	dev->state = ETH_STATE_INIT;
 	dev->next  = eth_devices;
 	dev->index = index++;
@@ -254,7 +253,6 @@ int eth_initialize(bd_t *bis)
 	int num_devices = 0;
 	eth_devices = NULL;
 	eth_current = NULL;
-
 	bootstage_mark(BOOTSTAGE_ID_NET_ETH_START);
 #if defined(CONFIG_MII) || defined(CONFIG_CMD_MII)
 	miiphy_init();
@@ -263,7 +261,7 @@ int eth_initialize(bd_t *bis)
 #ifdef CONFIG_PHYLIB
 	phy_init();
 #endif
-
+	
 	/*
 	 * If board-specific initialization exists, call it.
 	 * If not, call a CPU-specific one
@@ -283,7 +281,7 @@ int eth_initialize(bd_t *bis)
 	} else {
 		struct eth_device *dev = eth_devices;
 		char *ethprime = getenv ("ethprime");
-
+	
 		bootstage_mark(BOOTSTAGE_ID_NET_ETH_INIT);
 		do {
 			if (dev->index)
@@ -305,7 +303,6 @@ int eth_initialize(bd_t *bis)
 			dev = dev->next;
 			num_devices++;
 		} while(dev != eth_devices);
-
 		eth_current_changed();
 		putc ('\n');
 	}

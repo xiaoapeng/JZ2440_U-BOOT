@@ -4,7 +4,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
++ * published by the Free Software Foundation; either version 2 of
  * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -52,11 +52,32 @@ static void nand_read_buf(struct mtd_info *mtd, u_char *buf, int len)
 }
 #endif
 
-static void s3c2440_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
+static void s3c2440_nand_select(struct mtd_info *mtd, int chipnr)
 {
-	struct nand_chip *chip = mtd->priv;
 	struct s3c2440_nand *nand = s3c2440_get_base_nand();
+	switch (chipnr) {
+	case -1:/*取消选中*/
+		writel(readl(&nand->nfcont) | (1<<1),
+			       &nand->nfcont);
+		break;
+	case 0:
+	//使能选中
+		writel(readl(&nand->nfcont) & ~(1<<1),
+		       &nand->nfcont);
+		break;
 
+	default:
+		BUG();
+	}
+}
+
+
+
+
+static void s3c2440_hwcontrol(struct mtd_info *mtd, int cmd_dat, unsigned int ctrl)
+{
+	struct s3c2440_nand *nand = s3c2440_get_base_nand();
+#if 0
 	debug("hwcontrol(): 0x%02x 0x%02x\n", cmd, ctrl);
 
 	if (ctrl & NAND_CTRL_CHANGE) {
@@ -70,15 +91,29 @@ static void s3c2440_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 		chip->IO_ADDR_W = (void *)IO_ADDR_W;
 
 		if (ctrl & NAND_NCE)
-			writel(readl(&nand->nfconf) & ~S3C2440_NFCONF_nFCE,
-			       &nand->nfconf);
+			//使能选中
+			writel(readl(&nand->nfcont) & ~(1<<1),
+			       &nand->nfcont);
 		else
-			writel(readl(&nand->nfconf) | S3C2440_NFCONF_nFCE,
-			       &nand->nfconf);
+			//取消选中
+			writel(readl(&nand->nfcont) | (1<<1),
+			       &nand->nfcont);
 	}
 
 	if (cmd != NAND_CMD_NONE)
 		writeb(cmd, chip->IO_ADDR_W);
+#endif
+	if(ctrl& NAND_CLE)
+	{
+		//发命令
+		writeb(cmd_dat,&nand->nfcmd);
+	}
+	else
+	if(ctrl & NAND_ALE)
+	{
+		//发地址
+		writeb(cmd_dat,&nand->nfaddr);
+	}
 }
 
 static int s3c2440_dev_ready(struct mtd_info *mtd)
@@ -144,17 +179,26 @@ int board_nand_init(struct nand_chip *nand)
 	twrph1 = 8;
 #endif
 
+#if 0
 	cfg = S3C2440_NFCONF_EN;
 	cfg |= S3C2440_NFCONF_TACLS(tacls - 1);
 	cfg |= S3C2440_NFCONF_TWRPH0(twrph0 - 1);
 	cfg |= S3C2440_NFCONF_TWRPH1(twrph1 - 1);
+#endif
+	/*初始化cong寄存器 配置时序*/
+	cfg = ((tacls-1)<<12)|((twrph0-1)<<8)|((twrph1-1)<<4);
 	writel(cfg, &nand_reg->nfconf);
 
-	/* initialize nand_chip data structure */
+	/*使能NAND FLASH 控制器 ，初始化RCC，禁止片选*/
+	writel((1<<4)|(1<<1)|(1<<0),&nand_reg->nfcont);
+	
+
+	/*设置读写寄存器的地址*/
 	nand->IO_ADDR_R = (void *)&nand_reg->nfdata;
 	nand->IO_ADDR_W = (void *)&nand_reg->nfdata;
 
-	nand->select_chip = NULL;
+	//自己写	如果写为null 那么就调用 nand_select_chip
+	nand->select_chip = s3c2440_nand_select;
 
 	/* read_buf and write_buf are default */
 	/* read_byte and write_byte are default */
@@ -164,6 +208,7 @@ int board_nand_init(struct nand_chip *nand)
 
 	/* hwcontrol always must be implemented */
 	nand->cmd_ctrl = s3c2440_hwcontrol;
+	
 
 	nand->dev_ready = s3c2440_dev_ready;
 

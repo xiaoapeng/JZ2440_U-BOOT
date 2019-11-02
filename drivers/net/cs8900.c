@@ -304,7 +304,7 @@ int cs8900_initialize(u8 dev_num, int base_addr)
 {
 	struct eth_device *dev;
 	struct cs8900_priv *priv;
-
+	
 	dev = malloc(sizeof(*dev));
 	if (!dev) {
 		return 0;
@@ -328,9 +328,8 @@ int cs8900_initialize(u8 dev_num, int base_addr)
 
 	/* Load MAC address from EEPROM */
 	cs8900_get_enetaddr(dev);
-
 	sprintf(dev->name, "%s-%hu", CS8900_DRIVERNAME, dev_num);
-
+	//strcpy(dev->name,"CS8900-0\n");
 	eth_register(dev);
 	return 0;
 }

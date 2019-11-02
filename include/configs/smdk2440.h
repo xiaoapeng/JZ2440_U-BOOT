@@ -43,8 +43,8 @@
 //定义打印信息
 //#define DEBUG
 
-
-#define CONFIG_SYS_TEXT_BASE	0x33f5b000
+//0x33f5b000
+#define CONFIG_SYS_TEXT_BASE	0x33f40000
 
 #define CONFIG_SYS_ARM_CACHE_WRITETHROUGH
 

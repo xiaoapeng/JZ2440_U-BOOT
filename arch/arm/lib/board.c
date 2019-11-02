@@ -263,6 +263,10 @@ void board_init_f(ulong bootflag)
 	init_fnc_t **init_fnc_ptr;
 	gd_t *id;
 	ulong addr, addr_sp;
+	//addr 目的地址
+	//addr_sp 新栈
+	//id  gd结构体地址
+	
 #ifdef CONFIG_PRAM
 	ulong reg;
 #endif
@@ -324,7 +328,7 @@ void board_init_f(ulong bootflag)
 	 */
 	gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
 #endif
-	//0x30000000					
+	//0x30000000				+0x04000000	
 	addr = CONFIG_SYS_SDRAM_BASE + gd->ram_size;
 
 #ifdef CONFIG_LOGBUFFER
@@ -374,7 +378,10 @@ void board_init_f(ulong bootflag)
 	 * reserve memory for U-Boot code, data & bss
 	 * round down to next 4 kB limit
 	 */
-	addr -= gd->mon_len;
+	//保留test bss date rodate的位置
+	//此时为需要可以扩大代码段的位置
+	//addr -= (gd->mon_len);
+	addr = CONFIG_SYS_TEXT_BASE;
 	addr &= ~(4096 - 1);
 
 	debug("Reserving %ldk for U-Boot at: %08lx\n", gd->mon_len >> 10, addr);
@@ -390,6 +397,7 @@ void board_init_f(ulong bootflag)
 	 * (permanently) allocate a Board Info struct
 	 * and a permanent copy of the "global" data
 	 */
+	//预留gd结构体的位置
 	addr_sp -= sizeof (bd_t);
 	bd = (bd_t *) addr_sp;
 	gd->bd = bd;
@@ -440,7 +448,7 @@ void board_init_f(ulong bootflag)
 	debug("relocation Offset is: %08lx\n", gd->reloc_off);
 	memcpy(id, (void *)gd, sizeof(gd_t));
 	//重定位代码 c语言调用汇编
-	//panic("目的地址：addr=0x%08x",addr);
+	//printf("目的地址：addr=0x%08x\n",addr);
 	//panic("neddddddddddd\n");
 	relocate_code(addr_sp, id, addr);
 	//board_init_r(id,addr);
